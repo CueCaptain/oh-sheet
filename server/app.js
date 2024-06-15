@@ -6,6 +6,9 @@ import nms from './LiveStreamServer.js';
 import ServerData from './services/ServerData.js';
 
 
+import { router as cuesheetRouter } from './routes/cuesheetRouter.js';
+
+
 console.info('Initializing server.');
 
 const app = express();
@@ -24,6 +27,9 @@ app.use(bodyParser.raw({ inflate: true, limit: '1mb', type: 'text/plain' }));
 app.use((err, req, res, next) => {
     res.status(500).send(err.stack);
 });
+
+//router
+app.use('/cuesheet', cuesheetRouter);
 
 console.info('Creating server.');
 const server = http.createServer(app);

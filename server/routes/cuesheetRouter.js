@@ -2,7 +2,8 @@ import express from 'express';
 
 import { 
     postGoogleSheet,
-    getSheetNamesFromGoogleSheets
+    getSheetNamesFromGoogleSheets,
+    generateStreamKey,
 } from '../controllers/cuesheetController.js';
 
 export const router = express.Router();
