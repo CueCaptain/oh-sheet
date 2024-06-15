@@ -1,0 +1,50 @@
+import express from 'express';
+import cors from 'cors';
+import http from 'http';
+import bodyParser from 'body-parser';
+import nms from './LiveStreamServer.js';
+import ServerData from './services/ServerData.js';
+
+
+console.info('Initializing server.');
+
+const app = express();
+
+// enable cors
+app.use(cors());
+app.options('*', cors());
+
+// json middleware
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '1mb' }));
+app.use(bodyParser.raw({ inflate: true, limit: '1mb', type: 'text/plain' }));
+
+
+// Implement route for errors
+app.use((err, req, res, next) => {
+    res.status(500).send(err.stack);
+});
+
+console.info('Creating server.');
+const server = http.createServer(app);
+
+export const serveReactApp = async () => {
+    const port = 4001;
+    console.info(`Starting server on port ${port}.`);
+    server.listen(port, '0.0.0.0');
+    console.info('Starting websocket Server');
+    global.serverData = new ServerData(server);
+    nms.run();
+    return true;
+}
+
+export const shutdownReactApp = async () => {
+    console.info("Shutting down server")
+    server.close();
+}
+
+process.once('SIGHUP', shutdownReactApp);
+process.once('SIGINT', shutdownReactApp);
+process.once('SIGTERM', shutdownReactApp);
+
+serveReactApp();
