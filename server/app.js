@@ -34,7 +34,7 @@ app.use('/cuesheet', cuesheetRouter);
 console.info('Creating server.');
 const server = http.createServer(app);
 
-export const serveReactApp = async () => {
+export const serveApp = async () => {
     const port = 4001;
     console.info(`Starting server on port ${port}.`);
     server.listen(port, '0.0.0.0');
@@ -53,4 +53,4 @@ process.once('SIGHUP', shutdownReactApp);
 process.once('SIGINT', shutdownReactApp);
 process.once('SIGTERM', shutdownReactApp);
 
-serveReactApp();
+serveApp();
