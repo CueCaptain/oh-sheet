@@ -1,5 +1,6 @@
 import Landing from "pages/Landing/Landing";
 import NotFound from "pages/NotFound/NotFound";
+import Controller from "pages/Timesheet/Controller";
 import {
     createBrowserRouter,
     RouterProvider,
@@ -11,6 +12,10 @@ const router = createBrowserRouter([
         element: <Landing/>,
         errorElement: <NotFound />,
     },
+    {
+        path:"/timesheet/controller",
+        element: <Controller/>
+    }
 ]);
 
 function App() {

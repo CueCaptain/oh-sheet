@@ -5,7 +5,7 @@
   "type": "module",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "nodemon --ignore '*.json' app.js",
     "clean": "rm -r node_modules && rm package-lock.json && npm install",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

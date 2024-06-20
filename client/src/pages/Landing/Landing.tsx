@@ -35,16 +35,16 @@ export default function Landing () {
                                 <Tabs.Tab value='timesheets'>
                                     Timesheets
                                 </Tabs.Tab>
-                                <Tabs.Tab value='livestream' disabled={!!server.data.streamKey} onClick={() => navigate('/watch')}>
+                                <Tabs.Tab value='livestream' disabled={!server.data.streamKey} onClick={() => navigate('/watch')}>
                                     Livestream
                                 </Tabs.Tab>
                             </Tabs.List>
                             <Center>
                                 <Tabs.Panel value="timesheets">
                                     <Group>
-                                        <Button variant='subtle' onClick={() => {navigate('/dashboard/controller')}}> Controller </Button> 
-                                        <Button variant='subtle' onClick={() => {navigate('/dashboard/operator')}}> Operator </Button> 
-                                        <Button variant='subtle' onClick={() => {navigate('/dashboard/stage_timer')}}> Stage Timer </Button> 
+                                        <Button variant='subtle' onClick={() => {navigate('/timesheet/controller')}}> Controller </Button> 
+                                        <Button variant='subtle' onClick={() => {navigate('/timesheet/operator')}}> Operator </Button> 
+                                        <Button variant='subtle' onClick={() => {navigate('/timesheet/stage_timer')}}> Stage Timer </Button> 
                                     </Group>
                                 </Tabs.Panel>
                             </Center>

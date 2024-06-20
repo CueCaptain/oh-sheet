@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 import moment from 'moment';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const serverDataFilePath = join(__dirname, 'data/serverdata.json');
+const serverDataFilePath = join(__dirname, 'serverdata.json');
 
 //TODO: this needs to emit specific updates to the client. Not the entire data
 //TODO: remove moment
@@ -104,8 +104,8 @@ export default class ServerData {
 
     writeServerDataFile() {
         try {
-            const jsonString = JSON.stringify(this.data, null, 2);
-            writeFileSync(serverDataFilePath, jsonString, 'utf-8');
+            const jsonString = JSON.stringify(this.serverData, null, 2);
+            writeFileSync(serverDataFilePath, jsonString, { flag: 'w' });
         } catch (error) {
             console.error('Error writing JSON file:', error);
         }
