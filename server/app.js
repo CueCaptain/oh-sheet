@@ -7,7 +7,7 @@ import ServerData from './services/ServerData.js';
 
 
 import { router as cuesheetRouter } from './routes/cuesheetRouter.js';
-
+import { router as mediaServerRouter } from './routes/mediaServerRouter.js';
 
 console.info('Initializing server.');
 
@@ -30,6 +30,7 @@ app.use((err, req, res, next) => {
 
 //router
 app.use('/cuesheet', cuesheetRouter);
+app.use('/mediaserver', mediaServerRouter);
 
 console.info('Creating server.');
 const server = http.createServer(app);

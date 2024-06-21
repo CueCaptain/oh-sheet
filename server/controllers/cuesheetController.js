@@ -101,12 +101,6 @@ export const postGoogleSheet = async (req, res) => {
     }
 };
 
-export const generateStreamKey = async (req, res) => {
-    const streamKey = randomWords(3).join('-');
-    global.serverData.setServerDataByKey('streamKey', streamKey);
-    res.status(200).send({message: "success"});
-};
-
 const validateHeaders = (headers) => {
     headers = headers?.map(val => val.toLowerCase());
     const found = ['cue', 'start', 'end', 'item'].every(r => headers.includes(r));

@@ -17,15 +17,7 @@
 
 /* For dark mode */
 :root[data-mantine-color-scheme="dark"] {
-  --mantine-color-body: var(--mantine-color-blueGray-8) !important;
-}
-
-body {
-  margin: 0;
-  display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  --mantine-color-body: var(--mantine-color-dark-8) !important;
 }
 
 ::-webkit-scrollbar{
