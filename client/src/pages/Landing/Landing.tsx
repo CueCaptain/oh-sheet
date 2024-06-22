@@ -9,7 +9,7 @@ export default function Landing () {
     const server = useServer();
 
     return (<>
-        <Flex w={'100vw'}>
+        <Flex w={'100vw'} h={'100vh'}>
             <Flex miw={'50%'} maw={'50%'} justify={'flex-end'} align={'center'}>
                 <motion.div
                     key="heading"

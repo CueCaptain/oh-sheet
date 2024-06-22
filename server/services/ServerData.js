@@ -20,7 +20,6 @@ export default class ServerData {
             subtitle: "",
             cues: [],
             currentPtr: 0,
-            status: 'idle',
             standBy: false,
             timerData: {
                 currentStartTime: 0,
