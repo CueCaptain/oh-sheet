@@ -3,7 +3,7 @@ import {Box, Center, Title } from '@mantine/core';
 import Cue from 'components/Cue/Cue';
 import { useServer } from 'contexts/ServerDataContext';
 
-
+//TODO: Instead of entire cue lighting up just have a tally light pill on the top that lights up and the border of the cue also light up. Then add alternating colors to the cue keys such that its easier to read
 export default function Timesheet () {
     const server = useServer();
     const cues = server.data.cues;
