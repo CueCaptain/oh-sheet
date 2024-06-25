@@ -44,7 +44,7 @@ export default function Landing () {
                                     <Group>
                                         <Button variant='subtle' onClick={() => {navigate('/timesheet/controller')}}> Controller </Button> 
                                         <Button variant='subtle' onClick={() => {navigate('/timesheet/operator')}}> Operator </Button> 
-                                        <Button variant='subtle' onClick={() => {navigate('/timesheet/stage_timer')}}> Stage Timer </Button> 
+                                        <Button variant='subtle' onClick={() => {navigate('/timesheet/stage')}}> Stage Timer </Button> 
                                     </Group>
                                 </Tabs.Panel>
                             </Center>
