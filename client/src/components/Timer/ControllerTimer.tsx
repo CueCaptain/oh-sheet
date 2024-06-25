@@ -30,6 +30,7 @@ export default function ControllerTimer () {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            event.preventDefault();
             const target = event.target as HTMLInputElement;
             if(target.id.includes('no-key-down')) return null;
             if (event.key === "ArrowRight" || event.key === "d" || event.key === 'MediaTrackNext') {

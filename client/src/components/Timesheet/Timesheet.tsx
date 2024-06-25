@@ -14,8 +14,8 @@ export default function Timesheet () {
     const standardColor = 'dark.6';
 
     useEffect(() => {
-        if(standBy) document.getElementById('cue-'+(currentPtr+1))?.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});
-        else document.getElementById('cue-'+currentPtr)?.scrollIntoView({behavior: 'smooth', block: 'center', inline: 'center'});
+        if(standBy) document.getElementById('cue-'+(currentPtr+1))?.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'start'});
+        else document.getElementById('cue-'+currentPtr)?.scrollIntoView({behavior: 'smooth', block: 'start', inline: 'start'});
     }, [currentPtr, standBy]);
 
     return (
