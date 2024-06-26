@@ -13,7 +13,7 @@ export default function Controller() {
     return (
         <>
             <Flex h={'100vh'} w={'100vw'}>
-                <Box m={4}>
+                <Box m={4} style={{overflowY: 'auto', overflowX: 'hidden'}} miw={250}>
                     <Flex h={'100%'} direction={'column'} maw={363} miw={250}>
                         <Box id="timerBox" m={4} p='lg' bg={'dark.6'} style={{borderRadius: '1rem'}}>
                             <Center h={'100%'}>
@@ -40,7 +40,7 @@ export default function Controller() {
                         </Box>
                     </Flex>
                 </Box>
-                <Box id='timeSheetBox' m={8} style={{flexGrow: 1, overflow:'auto', borderTopLeftRadius: '1rem', borderTopRightRadius: '1rem'}}>
+                <Box id='timeSheetBox' m={8} style={{flexGrow: 1, overflow:'auto'}}>
                     <Timesheet />
                 </Box>
             </Flex>

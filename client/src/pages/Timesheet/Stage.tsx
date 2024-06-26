@@ -1,7 +1,7 @@
 import {Center, Flex} from '@mantine/core';
 import StageClock from 'components/Timer/StageClock';
 import StageTimer from 'components/Timer/StageTimer';
-// import MessageOverlay from 'components/message/MessageOverlay';
+import MessageOverlay from 'components/Messages/MessageOverlay';
 import { useEffect, useRef } from 'react';
 
 
@@ -13,11 +13,14 @@ export default function Stage () {
         if(!scaleRef || !scaleRef.current) return;
         const parent = scaleRef.current.parentElement;
         if(!parent) return;
+        const parentWidth = parent.clientWidth;
         const parentHeight = parent.clientHeight;
+        const childWidth = scaleRef.current.clientWidth;
         const childHeight = scaleRef.current.clientHeight;
     
+        const scaleWidth = parentWidth / childWidth;
         const scaleHeight = parentHeight / childHeight;
-        const scale = scaleHeight;
+        const scale = Math.min(scaleHeight, scaleWidth);
     
         scaleRef.current.style.transform = `scale(${scale * 0.95})`;
         scaleRef.current.style.transformOrigin = 'center';
@@ -44,7 +47,7 @@ export default function Stage () {
                     </Flex>
                 </Flex>
             </Center>
-            {/* <MessageOverlay type={'stageTimerMessage'} /> */}
+            <MessageOverlay type={'stageTimerMessage'} />
         </>
     );
 }

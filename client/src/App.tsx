@@ -1,6 +1,7 @@
 import Landing from "pages/Landing/Landing";
 import NotFound from "pages/NotFound/NotFound";
 import Controller from "pages/Timesheet/Controller";
+import Operator from "pages/Timesheet/Operator";
 import Stage from "pages/Timesheet/Stage";
 import {
     createBrowserRouter,
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
     {
         path:"/timesheet/controller",
         element: <Controller/>
+    },
+    {
+        path:"/timesheet/operator",
+        element: <Operator />
     },
     {
         path:"/timesheet/stage",
