@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Flex, Input, Text, ActionIcon } from '@mantine/core';
+import { Flex, Input, ActionIcon } from '@mantine/core';
 import { IoArrowForward, IoCloseOutline } from "react-icons/io5";
 import { useServer } from 'contexts/ServerDataContext';
 

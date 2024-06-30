@@ -1,8 +1,7 @@
 import { useEffect } from 'react';
-import { Flex, Box, Title, Center } from '@mantine/core';
+import { Box, Title, Center } from '@mantine/core';
 import Countdown, { CountdownApi } from 'react-countdown';
 import { useServer } from 'contexts/ServerDataContext';
-import StageClock from './StageClock';
 import moment from 'moment';
 
 export interface IStageTimerProps {

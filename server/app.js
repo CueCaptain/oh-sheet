@@ -48,13 +48,13 @@ export const serveApp = async () => {
     return true;
 }
 
-export const shutdownReactApp = async () => {
+export const shutdownApp = async () => {
     console.info("Shutting down server")
     server.close();
 }
 
-process.once('SIGHUP', shutdownReactApp);
-process.once('SIGINT', shutdownReactApp);
-process.once('SIGTERM', shutdownReactApp);
+process.once('SIGHUP', shutdownApp);
+process.once('SIGINT', shutdownApp);
+process.once('SIGTERM', shutdownApp);
 
 serveApp();

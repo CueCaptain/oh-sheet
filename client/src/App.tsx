@@ -1,4 +1,5 @@
 import Landing from "pages/Landing/Landing";
+import WatchLiveStream from "pages/Livestream/WatchLiveStream";
 import NotFound from "pages/NotFound/NotFound";
 import Controller from "pages/Timesheet/Controller";
 import Operator from "pages/Timesheet/Operator";
@@ -15,16 +16,25 @@ const router = createBrowserRouter([
         errorElement: <NotFound />,
     },
     {
-        path:"/timesheet/controller",
-        element: <Controller/>
+        path:"/timesheet/",
+        children: [
+            {
+                path:"controller",
+                element: <Controller/> 
+            },
+            {
+                path:"operator",
+                element: <Operator />
+            },
+            {
+                path:"stage",
+                element: <Stage />
+            },
+        ]
     },
     {
-        path:"/timesheet/operator",
-        element: <Operator />
-    },
-    {
-        path:"/timesheet/stage",
-        element: <Stage />
+        path:"/watch",
+        element: <WatchLiveStream />
     },
 ]);
 

@@ -8,7 +8,7 @@ export default function MediaServerInfo () {
     const [loading, setLoading] = useState(false);
     const server = useServer();
     const streamKey = server.data.streamKey;
-    const streamAdminPage = import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR.replace(':4001', ':8000')+"/admin"
+    const streamAdminPage = import.meta.env.VITE_OHSHEET_MEDIA_SERVER_ADDR+"/admin";
     const generateStreamKey = () => {
         setLoading(true);
         fetch(import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR+'/mediaserver/generate_stream_key',{ 
@@ -26,7 +26,7 @@ export default function MediaServerInfo () {
                 <Box w={'100%'} m={'xs'}>
                     <Text>stream url:</Text>
                     <Flex align={'center'} justify={'center'}>
-                        rtmp://{import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR.replace('http://', '').replace(':4001', '')}/live
+                        {import.meta.env.VITE_OHSHEET_MEDIA_RTMP_ADDR}
                     </Flex>
                 </Box>      
             </Box>
