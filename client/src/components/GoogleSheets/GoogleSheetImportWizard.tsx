@@ -104,7 +104,7 @@ export default function GoogleSheetImportWizard(props : IGoogleSheetImportWizard
                 sheets.length === 0 ?
                 <Flex direction={'column'}>
                     <Flex mb={'md'}>
-                        <Input style={{flexGrow: 1}} placeholder="Google Sheet URL" onChange={(e) => setNewSheetUrl(e.target.value)} />
+                        <Input id='GoogleSheetInput-no-key-down' style={{flexGrow: 1}} placeholder="Google Sheet URL" onChange={(e) => setNewSheetUrl(e.target.value)} />
                     </Flex>
                     <Button mb={'xs'} onClick={getSheetNames}>Import</Button>
                     <Button variant={'outline'} onClick={() => window.open('https://docs.google.com/spreadsheets/d/1CccKfkQ8Y-mryWyUK21l6oxeJV3Wyhb7OmEo1qv18kk/template/preview', '_blank')}>Create From Template</Button>

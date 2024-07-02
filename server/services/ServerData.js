@@ -58,7 +58,23 @@ export default class ServerData {
     initialize(socket) {
         socket.on('updateServerData', (newServerData) => {
             this.updateServerData(newServerData);
-        })
+        });
+
+        socket.on('toggleStandBy', () => {
+            this.toggleStandBy();
+        });
+
+        socket.on('updateCurrentPtr', (newPtr) => {
+            this.updateCurrentPtr(newPtr);
+        });
+
+        socket.on('togglePlayPause', () => {
+            this.togglePlayPause();
+        });
+
+        socket.on('setMessageData', (messageData) => {
+            this.setMessageData(messageData);
+        });
     }
 
     updateServerData(newServerData){
@@ -86,6 +102,42 @@ export default class ServerData {
         this.serverEmitUpdate();
     }
 
+    toggleStandBy() {
+        const newServerData = {...this.serverData, standBy: !this.serverData.standBy};
+        this.updateServerData(newServerData);
+    }
+
+    updateCurrentPtr(newPtr) {
+        let newServerData = {...this.serverData, currentPtr: newPtr, standBy: false};
+        newServerData = this.determineTimerData(newServerData);
+        this.updateServerData(newServerData);
+    }
+
+    togglePlayPause() {
+        let newTimerData = {...this.serverData.timerData};
+        if(this.serverData.timerData.timerState === 'pause'){
+            newTimerData.timerState = 'play';
+            const now = moment().unix();
+            newTimerData.currentStartTime = now;
+            newTimerData.currentEndTime = now + newTimerData.currentDuration;
+        } else if (this.serverData.timerData.timerState === 'play'){
+            newTimerData.timerState = 'pause';
+            const now = moment().unix();
+            const newDuration = newTimerData.currentEndTime - now >= 0 ? newTimerData.currentEndTime - now : 0;
+            newTimerData.currentDuration = newDuration;
+            newTimerData.currentEndTime = now + newTimerData.currentDuration;
+        }
+        const newServerData = {...this.serverData, timerData: newTimerData};
+        this.updateServerData(newServerData);
+    }
+
+    setMessageData(messageData) {
+        let newServerData = {...this.serverData};
+        newServerData.messageData = messageData;
+        this.updateServerData(newServerData);
+    }
+
+
     serverEmitUpdate() {
         this.io.sockets.emit('serverDataUpdated', this.serverData);
         this.writeServerDataFile();
@@ -108,6 +160,19 @@ export default class ServerData {
         } catch (error) {
             console.error('Error writing JSON file:', error);
         }
+    }
+
+    determineTimerData(newServerData) {
+        const cue = newServerData.cues[newServerData.currentPtr];
+        const now = moment().unix();
+        newServerData.timerData = { 
+            ...newServerData.timerData,
+            currentStartTime: 0,
+            currentEndTime:  now + newServerData.timerData.currentDuration,
+            currentDuration: cue?.duration ? cue.duration : 0,
+            timerState: 'pause',
+        };
+        return newServerData;
     }
 
 }

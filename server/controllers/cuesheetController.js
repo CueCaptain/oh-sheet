@@ -73,7 +73,7 @@ export const postGoogleSheet = async (req, res) => {
                   }
                 );
                 const end = cues.findIndex((row) => row.cue?.toLowerCase() === 'end' || row.cue === undefined || row.cue === null);
-                cues = cues.slice(0, end-1);
+                cues = end > 0 ? cues.slice(0, end-1) : cues;
                 let cueMap = [];
 
                 for(let i = 0; i < cues.length; i++){
@@ -91,9 +91,12 @@ export const postGoogleSheet = async (req, res) => {
                         return false;
                     }
 
+                    if (end.isBefore(start)) {
+                        end.add(1, 'day');
+                    }
+
                     cues[i].duration = moment.duration(end.diff(start)).asSeconds();
                 }
-
                 global.serverData.openCueSheet(cues);
                 res.status(200).send(true);
             });

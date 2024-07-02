@@ -57,7 +57,7 @@ export default function ControllerTimer () {
                     { server.data.cues.length > 0 ? <Countdown 
                         key={server.data.cues[server.data.currentPtr]?.cue}
                         ref={setRef}
-                        date={timerData?.timerState === 'pause' ? (moment().unix() + timerData.currentDuration) * 1000 : timerData?.currentEndTime * 1000} 
+                        date={timerData?.timerState === 'pause' ? (moment().unix() + timerData.currentDuration) * 1000 : (server.timerOffset + timerData?.currentEndTime) * 1000} 
                         renderer={Renderer} 
                         autoStart={false}
                     /> : <Renderer hours={0} minutes={0} seconds={0}/> }

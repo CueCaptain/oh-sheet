@@ -9,13 +9,13 @@ interface ServerDataInterface {
     connected: boolean;
     data: IServerData;
     sortedHeaders: string[],
+    timerOffset: number,
     setSortedHeaders: Dispatch<SetStateAction<string[]>>;
     togglePlayPause: () => void;
     toggleStandBy: () => void;
     incrementCurrentPtr: () => void;
     decrementCurrentPtr: () => void;
     setMessageData: (key: 'operatorMessage' | 'stageTimerMessage', message:string) => void;
-    countdown: (num: number) => void;
 };
 
 const ServerDataContext = React.createContext<ServerDataInterface>({
@@ -40,13 +40,13 @@ const ServerDataContext = React.createContext<ServerDataInterface>({
         streamKey: '',
     },
     sortedHeaders: [],
+    timerOffset: 0,
     setSortedHeaders: () => {},
     togglePlayPause: () => {},
     toggleStandBy: () => {},
     incrementCurrentPtr: () => {},
     decrementCurrentPtr: () => {},
-    setMessageData: (key: 'operatorMessage' | 'stageTimerMessage', message:string) => {},
-    countdown: (num: number) => {},
+    setMessageData: (key: 'operatorMessage' | 'stageTimerMessage', message:string) => {}
 });
 
 export function useServer() {
@@ -75,9 +75,15 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
         },
         streamKey: '',
     });
-    const [sortedHeaders, setSortedHeaders] = useState<string[]>([]); 
+    const [sortedHeaders, setSortedHeaders] = useState<string[]>([]);
+    const [timerOffset, setTimerOffset] = useState<number>(0);
 
     useEffect(() => {
+        calculateTimerOffset();
+        const calculateTimerOffsetInterval = setInterval(async () => {
+            await calculateTimerOffset();
+        }, 60000);
+
         const _socket = io(import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR, { transports: ['websocket'] });
         setSocket(_socket);
         _socket.on('connected', (data: IServerData) => {
@@ -91,91 +97,80 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
         });
 
         return () => {
+            clearInterval(calculateTimerOffsetInterval);
             setConnected(false);
             _socket.disconnect();
         }
-    },[])
+    },[]);
+
+    const calculateTimerOffset = async () => {
+        try {
+            const url = `${import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR}/ntp/time?t1=${moment().unix()}`;    
+            const response = await fetch(url, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            });
+    
+            if (response.ok) {
+                const { flightDifference, t3 } = await response.json();
+                const t4 = moment().unix();
+                const offset = (flightDifference + (t3 - t4)) / 2;
+                setTimerOffset(offset);
+            } else {
+                const e = await response.json();
+                throw new Error(e.message);
+            }
+        } catch (error) {
+            console.error("Could not Calculate Timer Offset", error);
+        }
+    };
+    
+
+    const emitSocketData = (key: string, data: any = '') => {
+        if(socket) socket.emit(key, data);
+    }
 
     const updateServerData = (newServerData: IServerData) => {
-        if(socket) socket.emit('updateServerData', newServerData);
+        emitSocketData('updateServerData', newServerData);
     }
 
     const toggleStandBy = () => {
-        const newServerData = {...serverData, standBy: !serverData.standBy};
-        updateServerData(newServerData);
+        emitSocketData('toggleStandBy');
     };
 
     const incrementCurrentPtr = () => {
         const newPtr = serverData.currentPtr >= serverData.cues.length - 1 ? 0 : ++serverData.currentPtr;
-        let newServerData = {...serverData, currentPtr: newPtr, standBy: false};
-        newServerData = determineTimerData(newServerData);
-        updateServerData(newServerData);
+        emitSocketData('updateCurrentPtr', newPtr);
     }
 
     const decrementCurrentPtr = () => {
         const newPtr = serverData.currentPtr <= 0 ? 0 : --serverData.currentPtr;
-        let newServerData = {...serverData, currentPtr: newPtr, standBy: false};
-        newServerData = determineTimerData(newServerData);
-        updateServerData(newServerData);
+        emitSocketData('updateCurrentPtr', newPtr);
     }
 
     const togglePlayPause = () => {
-        let newTimerData = {...serverData.timerData};
-        if(serverData.timerData.timerState === 'pause'){
-            newTimerData.timerState = 'play';
-            const now = moment().unix();
-            newTimerData.currentStartTime = now;
-            newTimerData.currentEndTime = now + newTimerData.currentDuration;
-        } else if (serverData.timerData.timerState === 'play'){
-            newTimerData.timerState = 'pause';
-            const now = moment().unix();
-            const newDuration = newTimerData.currentEndTime - now >= 0 ? newTimerData.currentEndTime - now : 0;
-            newTimerData.currentDuration = newDuration;
-            newTimerData.currentEndTime = now + newTimerData.currentDuration;
-        }
-        const newServerData = {...serverData, timerData: newTimerData};
-        updateServerData(newServerData);
-    }
-
-    const determineTimerData = (newServerData: IServerData) => {
-        const cue = newServerData.cues[newServerData.currentPtr];
-        const now = moment().unix();
-        newServerData.timerData = { 
-            ...newServerData.timerData,
-            currentStartTime: 0,
-            currentEndTime:  now + newServerData.timerData.currentDuration,
-            currentDuration: cue?.duration ? cue.duration : 0,
-            timerState: 'pause',
-        };
-        return newServerData;
+        emitSocketData('togglePlayPause');
     }
 
     const setMessageData = (key: 'operatorMessage' | 'stageTimerMessage', message:string) => {
-        let newServerData = {...serverData};
-        newServerData.messageData[key] = message;
-        updateServerData(newServerData);
-    }
-    const countdown = (num: number) => {
-        let newTimerData = {...serverData.timerData};
-        newTimerData.timerState = 'pause';
-        newTimerData.currentStartTime = 0;
-        newTimerData.currentEndTime = num;
-        newTimerData.currentDuration = num;
-        const newServerData = {...serverData, timerData: newTimerData};
-        updateServerData(newServerData);
+        let messageData = {...serverData.messageData};
+        messageData[key] = message;
+        emitSocketData('setMessageData', messageData);
     }
 
     const value = {
         connected: connected,
         data: serverData,
         sortedHeaders: sortedHeaders,
+        timerOffset: timerOffset,
         setSortedHeaders: setSortedHeaders,
         togglePlayPause: togglePlayPause,
         toggleStandBy: toggleStandBy,
         incrementCurrentPtr: incrementCurrentPtr,
         decrementCurrentPtr: decrementCurrentPtr,
         setMessageData: setMessageData,
-        countdown: countdown,
     };
 
     return (
