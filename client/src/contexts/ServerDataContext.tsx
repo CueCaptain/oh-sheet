@@ -46,7 +46,7 @@ const ServerDataContext = React.createContext<ServerDataInterface>({
     toggleStandBy: () => {},
     incrementCurrentPtr: () => {},
     decrementCurrentPtr: () => {},
-    setMessageData: (key: 'operatorMessage' | 'stageTimerMessage', message:string) => {}
+    setMessageData: () => {}
 });
 
 export function useServer() {
@@ -83,8 +83,7 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
         const calculateTimerOffsetInterval = setInterval(async () => {
             await calculateTimerOffset();
         }, 60000);
-
-        const _socket = io(import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR, { transports: ['websocket'] });
+        const _socket = io(`http://${window.location.hostname}:${import.meta.env.VITE_OHSHEET_BACKEND_SERVER_PORT}`, { transports: ['websocket'] });
         setSocket(_socket);
         _socket.on('connected', (data: IServerData) => {
             setConnected(true);
@@ -105,7 +104,7 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
 
     const calculateTimerOffset = async () => {
         try {
-            const url = `${import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR}/ntp/time?t1=${moment().unix()}`;    
+            const url = `http://${window.location.hostname}:${import.meta.env.VITE_OHSHEET_BACKEND_SERVER_PORT}/ntp/time?t1=${moment().unix()}`;    
             const response = await fetch(url, {
                 method: 'GET',
                 headers: {
@@ -130,10 +129,6 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
 
     const emitSocketData = (key: string, data: any = '') => {
         if(socket) socket.emit(key, data);
-    }
-
-    const updateServerData = (newServerData: IServerData) => {
-        emitSocketData('updateServerData', newServerData);
     }
 
     const toggleStandBy = () => {

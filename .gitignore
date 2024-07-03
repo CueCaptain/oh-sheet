@@ -278,3 +278,4 @@ yarn-debug.log*
 yarn-error.log*
 
 serverdata.json
+docker

@@ -25,10 +25,10 @@ export default function GoogleSheetImportWizard(props : IGoogleSheetImportWizard
     const [selectedSheet, setSelectedSheet] = useState<string | null>(null);
     const [sheets, setSheets] = useState<string []>([]);
     const [loading, setLoading] = useState(false);
-
+    console.log(window.location.href);
     const getSheetNames = () => {
         setLoading(true);
-        const url = new URL(import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR+"/cuesheet/get_sheet_names_from_google_sheets");
+        const url = new URL(`http://${window.location.hostname}:${import.meta.env.VITE_OHSHEET_BACKEND_SERVER_PORT}/cuesheet/get_sheet_names_from_google_sheets`);
         url.searchParams.append('spreadsheetUrl', newSheetUrl);
         fetch(url.toString()).then(async res => {
             if(res.ok) {
@@ -66,7 +66,7 @@ export default function GoogleSheetImportWizard(props : IGoogleSheetImportWizard
             sheetName: selectedSheet,
             headerRow: headerRow
         };
-        fetch(import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR+'/cuesheet/google_sheet', { 
+        fetch(`http://${window.location.hostname}:${import.meta.env.VITE_OHSHEET_BACKEND_SERVER_PORT}/cuesheet/google_sheet`, { 
             method: 'POST', 
             headers: {
                 'Content-Type': 'application/json'

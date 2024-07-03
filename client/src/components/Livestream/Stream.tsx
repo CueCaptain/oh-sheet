@@ -9,7 +9,7 @@ export default function Stream () {
     const playerRef = useRef<ReactPlayer | null>(null);
     const server = useServer();
     const streamKey = server.data.streamKey;
-    const streamUrl = import.meta.env.VITE_OHSHEET_BACKEND_SERVER_ADDR.replace(':4001', '') + ":8000/live/" + streamKey + ".flv"; 
+    const streamUrl = `http://${window.location.hostname}:${import.meta.env.VITE_OHSHEET_MEDIA_SERVER_PORT}/live/${streamKey}.flv`; 
     console.log(streamUrl);
     const onPlay = () => {
         playerRef?.current?.seekTo(.97, 'fraction');
