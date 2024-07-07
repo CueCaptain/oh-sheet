@@ -1,4 +1,4 @@
-import { Button, Title, Loader, Center, Group, Tabs, Flex } from '@mantine/core';
+import { Button, Title, Loader, Center, Group, Tabs, Flex, Box } from '@mantine/core';
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion"
 
@@ -9,6 +9,9 @@ export default function Landing () {
     const server = useServer();
 
     return (<>
+        <Box style={{ position: 'fixed', right: '1rem', top: '1rem', zIndex: 10 }}>
+            v0.0.1
+        </Box>
         <Flex w={'100vw'} h={'100vh'}>
             <Flex miw={'50%'} maw={'50%'} justify={'flex-end'} align={'center'}>
                 <motion.div
