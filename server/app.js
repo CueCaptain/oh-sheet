@@ -12,7 +12,6 @@ import ServerData from './services/ServerData.js';
 import { router as genericRouter } from './routes/genericRouter.js';
 import { router as cuesheetRouter } from './routes/cuesheetRouter.js';
 import { router as mediaServerRouter } from './routes/mediaServerRouter.js';
-import { router as ntpRouter } from './routes/ntpRouter.js';
 
 console.info('Initializing server.');
 
@@ -37,8 +36,6 @@ app.use((err, req, res, next) => {
 app.use('/', genericRouter);
 app.use('/cuesheet', cuesheetRouter);
 app.use('/mediaserver', mediaServerRouter);
-app.use('/ntp', ntpRouter);;
-
 
 console.info('Creating server.');
 const server = http.createServer(app);

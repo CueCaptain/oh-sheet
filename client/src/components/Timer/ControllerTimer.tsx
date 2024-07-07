@@ -4,7 +4,7 @@ import { ActionIcon } from '@mantine/core';
 
 import { IoPlay, IoPlaySkipBack, IoPlaySkipForward, IoPause } from 'react-icons/io5';
 import { AiOutlineAlert, AiFillAlert } from 'react-icons/ai';
-import Countdown, { CountdownApi } from 'react-countdown';
+import Countdown, { CountdownApi, CountdownTimeDelta } from 'react-countdown';
 import { useServer } from 'contexts/ServerDataContext';
 import moment from 'moment';
 
@@ -40,7 +40,7 @@ export default function ControllerTimer () {
             } else if (event.key === "ArrowUp" || event.key === "w") {
                 server.toggleStandBy();
             } else if (event.key === ' ' || event.key === 'MediaPlayPause') {
-                server.togglePlayPause();
+                togglePlayPause();
             }
         };
         document.addEventListener('keydown', handleKeyDown)
@@ -48,7 +48,23 @@ export default function ControllerTimer () {
         return () => {
           document.removeEventListener('keydown', handleKeyDown)
         }
-      }, [server]);
+    }, [server]);
+
+    const onTick = (timeDeltaOptions: CountdownTimeDelta) => {
+        server.updateCurrentDurationWithoutEmit(Math.ceil(timeDeltaOptions.total / 1000));
+    }
+ 
+    const onPause = (timeDeltaOptions: CountdownTimeDelta) => {
+        if(timerData.timerState === 'play') server.togglePlayPause(Math.ceil(timeDeltaOptions.total / 1000));
+    };
+
+    const togglePlayPause = () => {
+        if(timerData.timerState === 'play'){
+            if(countdownApi) countdownApi.pause();
+        } else {
+            server.togglePlayPause(-1);
+        }
+    };
 
     return (
         <>
@@ -57,9 +73,11 @@ export default function ControllerTimer () {
                     { server.data.cues.length > 0 ? <Countdown 
                         key={server.data.cues[server.data.currentPtr]?.cue}
                         ref={setRef}
-                        date={timerData?.timerState === 'pause' ? (moment().unix() + timerData.currentDuration) * 1000 : (server.timerOffset + timerData?.currentEndTime) * 1000} 
+                        date={moment().valueOf() + timerData.currentDuration * 1000} 
                         renderer={Renderer} 
                         autoStart={false}
+                        onPause={onPause}
+                        onTick={onTick}
                     /> : <Renderer hours={0} minutes={0} seconds={0}/> }
                 </Box>
                 <Flex justify={'center'} align={'center'} >
@@ -67,7 +85,7 @@ export default function ControllerTimer () {
                         <ActionIcon onClick={server.decrementCurrentPtr}>
                             <IoPlaySkipBack />
                         </ActionIcon>
-                        <ActionIcon onClick={server.togglePlayPause}>
+                        <ActionIcon onClick={togglePlayPause}>
                             {timerData.timerState === 'pause' ? <IoPlay /> : <IoPause /> }
                         </ActionIcon>
                         <ActionIcon onClick={server.incrementCurrentPtr}>

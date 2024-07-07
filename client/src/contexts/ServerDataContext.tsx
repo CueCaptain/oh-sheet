@@ -1,6 +1,5 @@
 import React, { useContext, useState, useEffect, Dispatch, SetStateAction } from "react"
 import io from 'socket.io-client';
-import moment from 'moment';
 import { IServerData } from "types";
 
 //TODO: remove moment
@@ -9,9 +8,9 @@ interface ServerDataInterface {
     connected: boolean;
     data: IServerData;
     sortedHeaders: string[],
-    timerOffset: number,
     setSortedHeaders: Dispatch<SetStateAction<string[]>>;
-    togglePlayPause: () => void;
+    togglePlayPause: (remainingDuration : number) => void;
+    updateCurrentDurationWithoutEmit: (newDuration: number) => void;
     toggleStandBy: () => void;
     incrementCurrentPtr: () => void;
     decrementCurrentPtr: () => void;
@@ -40,9 +39,9 @@ const ServerDataContext = React.createContext<ServerDataInterface>({
         streamKey: '',
     },
     sortedHeaders: [],
-    timerOffset: 0,
     setSortedHeaders: () => {},
     togglePlayPause: () => {},
+    updateCurrentDurationWithoutEmit: () => {},
     toggleStandBy: () => {},
     incrementCurrentPtr: () => {},
     decrementCurrentPtr: () => {},
@@ -76,13 +75,8 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
         streamKey: '',
     });
     const [sortedHeaders, setSortedHeaders] = useState<string[]>([]);
-    const [timerOffset, setTimerOffset] = useState<number>(0);
 
     useEffect(() => {
-        calculateTimerOffset();
-        const calculateTimerOffsetInterval = setInterval(async () => {
-            await calculateTimerOffset();
-        }, 60000);
         const _socket = io(`http://${window.location.hostname}:${import.meta.env.VITE_OHSHEET_BACKEND_SERVER_PORT}`, { transports: ['websocket'] });
         setSocket(_socket);
         _socket.on('connected', (data: IServerData) => {
@@ -91,41 +85,14 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
         });
 
         _socket.on('serverDataUpdated', (data: IServerData) => {
-            // console.log('serverDataUpdated', data);
             setServerData(data);
         });
 
         return () => {
-            clearInterval(calculateTimerOffsetInterval);
             setConnected(false);
             _socket.disconnect();
         }
     },[]);
-
-    const calculateTimerOffset = async () => {
-        try {
-            const url = `http://${window.location.hostname}:${import.meta.env.VITE_OHSHEET_BACKEND_SERVER_PORT}/ntp/time?t1=${moment().unix()}`;    
-            const response = await fetch(url, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            });
-    
-            if (response.ok) {
-                const { flightDifference, t3 } = await response.json();
-                const t4 = moment().unix();
-                const offset = (flightDifference + (t3 - t4)) / 2;
-                setTimerOffset(offset);
-            } else {
-                const e = await response.json();
-                throw new Error(e.message);
-            }
-        } catch (error) {
-            console.error("Could not Calculate Timer Offset", error);
-        }
-    };
-    
 
     const emitSocketData = (key: string, data: any = '') => {
         if(socket) socket.emit(key, data);
@@ -145,8 +112,12 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
         emitSocketData('updateCurrentPtr', newPtr);
     }
 
-    const togglePlayPause = () => {
-        emitSocketData('togglePlayPause');
+    const togglePlayPause = (remainingDuration : number) => {
+        emitSocketData('togglePlayPause', remainingDuration);
+    }
+
+    const updateCurrentDurationWithoutEmit = (newDuration : number) => {
+        emitSocketData('updateCurrentDurationWithoutEmit', newDuration);
     }
 
     const setMessageData = (key: 'operatorMessage' | 'stageTimerMessage', message:string) => {
@@ -159,9 +130,9 @@ export default function ServerDataProvider({ children } : {children: JSX.Element
         connected: connected,
         data: serverData,
         sortedHeaders: sortedHeaders,
-        timerOffset: timerOffset,
         setSortedHeaders: setSortedHeaders,
         togglePlayPause: togglePlayPause,
+        updateCurrentDurationWithoutEmit: updateCurrentDurationWithoutEmit,
         toggleStandBy: toggleStandBy,
         incrementCurrentPtr: incrementCurrentPtr,
         decrementCurrentPtr: decrementCurrentPtr,

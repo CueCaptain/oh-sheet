@@ -34,7 +34,7 @@ export default function BarTimer () {
             { server.data.cues.length > 0 ? <Countdown 
                 key={server.data.cues[server.data.currentPtr]?.cue}
                 ref={setRef}
-                date={timerData?.timerState === 'pause' ? (moment().unix() + timerData.currentDuration) * 1000 : (server.timerOffset + timerData?.currentEndTime) * 1000} 
+                date={moment().valueOf() + timerData.currentDuration * 1000} 
                 renderer={Renderer} 
                 autoStart={false}
             /> : <Progress size={'xl'} value={0} radius={'xl'} />}
