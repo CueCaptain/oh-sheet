@@ -45,8 +45,9 @@ export function CueListSortWizard() {
         server.setSortedHeaders(l);
     }
 
-    const deleteHeader = (index: number) => () => {
+    const deleteHeader = (val: string) => () => {
         let sortedHeaders = [...server.sortedHeaders];
+        const index = sortedHeaders.findIndex((x) => x === val);
         delete sortedHeaders[index];
         server.setSortedHeaders(sortedHeaders.filter((value) => value));
     }
@@ -65,11 +66,11 @@ export function CueListSortWizard() {
         );
     }).filter((val) => val);
 
-    const deleteHeaderOptions: (JSX.Element | null)[] = Object.keys(server.data.cues[server.data.currentPtr]).filter((val) => server.sortedHeaders.includes(val)).map((key, i) => {
+    const deleteHeaderOptions: (JSX.Element | null)[] = Object.keys(server.data.cues[server.data.currentPtr]).filter((val) => server.sortedHeaders.includes(val)).map((key) => {
         if(key === 'cue' || key === 'item' || key === 'start' || key === 'end' || key === 'duration') return null;
         return (
             <Box m={'xs'} key={key}>
-                <CueDraggableHeaderPiece showDragIcon={false} item={key} onClick={deleteHeader(i)} icon={'trash'}/>
+                <CueDraggableHeaderPiece showDragIcon={false} item={key} onClick={deleteHeader(key)} icon={'trash'}/>
             </Box>
         );
     }).filter((val) => val);
