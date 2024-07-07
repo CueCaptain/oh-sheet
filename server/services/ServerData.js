@@ -22,8 +22,6 @@ export default class ServerData {
             currentPtr: 0,
             standBy: false,
             timerData: {
-                currentStartTime: 0,
-                currentEndTime: 0,
                 currentDuration: 0,
                 timerState: 'pause',
             },            
@@ -68,8 +66,12 @@ export default class ServerData {
             this.updateCurrentPtr(newPtr);
         });
 
-        socket.on('togglePlayPause', () => {
-            this.togglePlayPause();
+        socket.on('togglePlayPause', (remainingDuration) => {
+            this.togglePlayPause(remainingDuration);
+        });
+
+        socket.on('updateCurrentDurationWithoutEmit', (newDuration) => {
+            this.updateCurrentDurationWithoutEmit(newDuration);
         });
 
         socket.on('setMessageData', (messageData) => {
@@ -85,12 +87,9 @@ export default class ServerData {
     openCueSheet(cues){
         this.serverData.cues = cues;
         const cue = cues[0];
-        const now = moment().unix();
         this.serverData.currentPtr = 0;
         this.serverData.timerData = { 
           ...this.serverData.timerData,
-          currentStartTime: 0,
-          currentEndTime:  now + this.serverData.timerData.currentDuration,
           currentDuration: cue?.duration ? cue.duration : 0,
           timerState: 'pause',
         };
@@ -109,26 +108,32 @@ export default class ServerData {
 
     updateCurrentPtr(newPtr) {
         let newServerData = {...this.serverData, currentPtr: newPtr, standBy: false};
-        newServerData = this.determineTimerData(newServerData);
+        const cue = newServerData.cues[newServerData.currentPtr];
+        newServerData.timerData = { 
+            ...newServerData.timerData,
+            currentDuration: cue?.duration ? cue.duration : 0,
+            timerState: 'pause',
+        };
         this.updateServerData(newServerData);
     }
 
-    togglePlayPause() {
+    togglePlayPause(remainingDuration) {
         let newTimerData = {...this.serverData.timerData};
+        if(remainingDuration !== -1) {
+            newTimerData.currentDuration = remainingDuration;
+        }
         if(this.serverData.timerData.timerState === 'pause'){
             newTimerData.timerState = 'play';
-            const now = moment().unix();
-            newTimerData.currentStartTime = now;
-            newTimerData.currentEndTime = now + newTimerData.currentDuration;
         } else if (this.serverData.timerData.timerState === 'play'){
             newTimerData.timerState = 'pause';
-            const now = moment().unix();
-            const newDuration = newTimerData.currentEndTime - now >= 0 ? newTimerData.currentEndTime - now : 0;
-            newTimerData.currentDuration = newDuration;
-            newTimerData.currentEndTime = now + newTimerData.currentDuration;
         }
         const newServerData = {...this.serverData, timerData: newTimerData};
         this.updateServerData(newServerData);
+    }
+
+    updateCurrentDurationWithoutEmit(newDuration) {
+        let newTimerData = {...this.serverData.timerData, currentDuration: newDuration};
+        this.serverData.timerData = newTimerData;
     }
 
     setMessageData(messageData) {
@@ -161,18 +166,4 @@ export default class ServerData {
             console.error('Error writing JSON file:', error);
         }
     }
-
-    determineTimerData(newServerData) {
-        const cue = newServerData.cues[newServerData.currentPtr];
-        const now = moment().unix();
-        newServerData.timerData = { 
-            ...newServerData.timerData,
-            currentStartTime: 0,
-            currentEndTime:  now + newServerData.timerData.currentDuration,
-            currentDuration: cue?.duration ? cue.duration : 0,
-            timerState: 'pause',
-        };
-        return newServerData;
-    }
-
 }
