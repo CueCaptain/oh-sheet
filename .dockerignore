@@ -1,2 +1,2 @@
 **/*.env*
-serverdata.json
+**/serverdata.json
