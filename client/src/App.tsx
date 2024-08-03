@@ -2,7 +2,7 @@ import Landing from 'pages/Landing/Landing';
 import WatchLiveStream from 'pages/Livestream/WatchLiveStream';
 import NotFound from 'pages/NotFound/NotFound';
 import Controller from 'pages/Timesheet/Controller';
-import Operator from 'pages/Timesheet/Operator';
+import Operator from 'pages/Timesheet/Operator2';
 import Stage from 'pages/Timesheet/Stage';
 import {createBrowserRouter, RouterProvider} from 'react-router-dom';
 

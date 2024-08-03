@@ -20,7 +20,7 @@ export default function Landing() {
   return (
     <>
       <Box style={{position: 'fixed', right: '1rem', top: '1rem', zIndex: 10}}>
-        v0.0.1
+        v0.0.2
       </Box>
       <Flex w={'100vw'} h={'100vh'}>
         <Flex miw={'50%'} maw={'50%'} justify={'flex-end'} align={'center'}>

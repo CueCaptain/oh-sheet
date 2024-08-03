@@ -9,14 +9,13 @@ export default function TimesheetSettings() {
   const server = useServer();
 
   return (
-    <Box>
+    <Box bottom={12} right={12} pos="absolute">
       <Modal
         id="idk"
         opened={opened}
         onClose={close}
         title="Timesheet Settings"
-        centered
-      >
+        centered>
         <Box w={'100%'} h={'100%'}>
           {server.data.cues.length > 0 ? (
             <CueListSortWizard />

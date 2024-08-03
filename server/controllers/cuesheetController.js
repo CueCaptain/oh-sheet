@@ -126,7 +126,7 @@ export const postGoogleSheet = async (req, res) => {
               if (end.isBefore(start)) {
                 end.add(1, 'day');
               }
-
+              cues[i].cue = i;
               cues[i].duration = moment.duration(end.diff(start)).asSeconds();
             }
             global.serverData.openCueSheet(cues);
